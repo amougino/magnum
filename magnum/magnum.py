@@ -3,7 +3,7 @@
 class MagNum:
 
     def __init__(self, float_val=0, precision=-8, custom_val_pow_sign=()):
-        if len(custom_val_pow_sign) != 3:
+        if custom_val_pow_sign == ():
             if float_val < 0:
                 self.sign = -1
                 float_val *= -1
@@ -27,7 +27,6 @@ class MagNum:
         self.prec = precision
         self.change_prec_round(precision)
         self.flatten_horizontal()
-        # print(self.val,self.pow)
 
     def change_prec_round(self, new_prec):
         if new_prec > self.pow:
@@ -36,9 +35,10 @@ class MagNum:
                 new_val[-1] += 1
             self.val = new_val
             self.pow = new_prec
-            while self.val[-1] == 0 and self.pow < 0:
+            self.flatten()
+            '''while self.val[-1] == 0 and self.pow < 0:
                 self.val.pop(-1)
-                self.pow += 1
+                self.pow += 1''' # re-add if seen that necessary
 
     def change_prec_no_round(self, new_prec):
         if new_prec > self.pow:
@@ -161,3 +161,8 @@ class MagNum:
             return (str_val)
         else:
             return ('-'+str_val)
+
+# to do : fuse sub and add ????
+# karatsuba
+# division
+# powers / fractional powers ?
