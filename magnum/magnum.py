@@ -38,7 +38,7 @@ class MagNum:
             self.flatten()
             '''while self.val[-1] == 0 and self.pow < 0:
                 self.val.pop(-1)
-                self.pow += 1''' # re-add if seen that necessary
+                self.pow += 1'''  # re-add if seen that necessary
 
     def change_prec_no_round(self, new_prec):
         if new_prec > self.pow:
@@ -85,10 +85,10 @@ class MagNum:
 
     def __add__(self, other, sign_diff=1):
         if self.sign == other.sign * sign_diff:
-            return (self.add(other))
+            return (self.add_sub(other))
         else:
             if self.abs_greater(other):
-                return (self.sub(other))  # sign = self.sign
+                return (self.add_sub(other, operation=-1))
             else:
                 if (self.val, self.pow) == (other.val, other.pow):
                     return (MagNum(
@@ -96,20 +96,20 @@ class MagNum:
                         custom_val_pow_sign=([0], 0, 1)
                     ))
                 else:
-                    # sign = other.sign
-                    return ((other.sub(self, sign_diff=-1)))
+                    return ((other.add_sub(self, operation=-1, sign_diff=-1)))
 
     def __sub__(self, other):
         return (self.__add__(other, sign_diff=-1))
 
-    def add(self, other):
+    def add_sub(self, other, operation=1, sign_diff=1):
         if other.pow > self.pow:
             new_other_val = other.val + \
                 [0 for i in range(other.pow - self.pow)]
             new_self_val = self.val
             new_pow = self.pow
         else:
-            new_self_val = self.val + [0 for i in range(self.pow - other.pow)]
+            new_self_val = self.val + \
+                [0 for i in range(self.pow - other.pow)]
             new_other_val = other.val
             new_pow = other.pow
         len_self = len(new_self_val)
@@ -122,27 +122,7 @@ class MagNum:
                 len_other - len_self)] + new_self_val
         new_val = []
         for i in range(len(new_self_val)):
-            new_val.append(new_self_val[i] + new_other_val[i])
-        new_num = MagNum(precision=max(self.prec, other.prec),
-                         custom_val_pow_sign=(new_val, new_pow, self.sign))
-        new_num.flatten()
-        return (new_num)
-
-    def sub(self, other, sign_diff=1):  # to do 3
-        if other.pow > self.pow:
-            new_other_val = other.val + \
-                [0 for i in range(other.pow - self.pow)]
-            new_self_val = self.val
-            new_pow = self.pow
-        else:
-            new_self_val = self.val + [0 for i in range(self.pow - other.pow)]
-            new_other_val = other.val
-            new_pow = other.pow
-        new_other_val = [0 for i in range(
-            len(new_self_val) - len(new_other_val))] + new_other_val
-        new_val = []
-        for i in range(len(new_self_val)):
-            new_val.append(new_self_val[i] - new_other_val[i])
+            new_val.append(new_self_val[i] + new_other_val[i] * operation)
         new_num = MagNum(precision=max(self.prec, other.prec),
                          custom_val_pow_sign=(new_val, new_pow, self.sign * sign_diff))
         new_num.flatten()
