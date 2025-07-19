@@ -129,6 +129,46 @@ class MagNum:
         new_num.flatten_horizontal()
         return (new_num)
 
+    def __mul__(self, other):
+        # collect both powers
+        # add both powers
+        # calculate val multiplication
+        # re-add the powers
+        # return
+
+        return ('Work in progress...')
+
+    def karatsuba(self, other):
+        # make copies of self and other
+
+        # 1 DIGIT NUMBER
+
+        # if len self == 1
+        # for every item in other, multiply by the only object in self
+        # flatten
+        # flatten horizontal ?
+        # return result
+
+        # do the same for len other == 1 with an "elif"
+
+        # MULTIPLE DIGIT NUMBER
+
+        # if self and other are not of the same length
+        # set them to the same length
+
+        # length : length of self and other (now the same length)
+        # half : int(length/2)
+        # split them in half (create high_a, low_a, high_b, low_b)
+
+        # calculate z0 : low_a * low_b
+        # calculate z1 : (high_a + low_a) * (high_b + low_b)
+        # calculate z2 : high_a * high_b
+        # k : 10^(length - half)
+        # calculate f : z2 * k^2 + (z1 - (z2 + z0)) * k + z0
+        # return f
+
+        pass
+
     def __str__(self):
         str_val = ''.join(str(i) for i in self.val)
         if self.pow < 0:
@@ -142,7 +182,6 @@ class MagNum:
         else:
             return ('-'+str_val)
 
-# to do : fuse sub and add ????
 # karatsuba
 # division
 # powers / fractional powers ?
