@@ -138,7 +138,7 @@ class MagNum:
 
         return ('Work in progress...')
 
-    def karatsuba(self, other):
+    def karatsuba(self_val, other_val):
         # make copies of self and other
 
         # 1 DIGIT NUMBER
