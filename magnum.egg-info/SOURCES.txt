@@ -1,8 +1,0 @@
-pyproject.toml
-magnum/__init__.py
-magnum/magnum.py
-magnum/main.py
-magnum.egg-info/PKG-INFO
-magnum.egg-info/SOURCES.txt
-magnum.egg-info/dependency_links.txt
-magnum.egg-info/top_level.txt
