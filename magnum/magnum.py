@@ -1,6 +1,7 @@
 # rotation
 
-import karatsuba
+
+import oper
 
 
 class MagNum:
@@ -68,30 +69,19 @@ class MagNum:
             while self.val[0] == 0:
                 self.val.pop(0)
 
-    def abs_greater(self, other):
-        if (self.val, self.pow) == (other.val, other.pow):
-            return (False)
-        else:
-            pos_len_self = len(self.val) + self.pow
-            pos_len_other = len(other.val) + other.pow
-            if pos_len_self != pos_len_other:
-                return (pos_len_self > pos_len_other)
-            else:
-                idx = 0
-                min_len = min(len(self.val), len(other.val))
-                while idx < min_len:
-                    if self.val[idx] != other.val[idx]:
-                        return (self.val[idx] > other.val[idx])
-                    else:
-                        idx += 1
-                return (len(self.val) > len(other.val))
+    def abs_greater(self, other, f_abs_greater=oper.abs_greater):
+        return f_abs_greater(self.val, self.pow, other.val, other.pow)
 
-    def __add__(self, other, sign_diff=1):
+    def __add__(self, other, sign_diff=1, f_add_sub=oper.add_sub):
         if self.sign == other.sign * sign_diff:
-            return (self.add_sub(other))
+            new_val, new_pow = f_add_sub(
+                self.val, self.pow, other.val, other.pow)
+            sign_diff = 1
         else:
             if self.abs_greater(other):
-                return (self.add_sub(other, operation=-1))
+                new_val, new_pow = f_add_sub(
+                    self.val, self.pow, other.val, other.pow, operation=-1)
+                sign_diff = 1
             else:
                 if (self.val, self.pow) == (other.val, other.pow):
                     return (MagNum(
@@ -99,40 +89,19 @@ class MagNum:
                         custom_val_pow_sign=([0], 0, 1)
                     ))
                 else:
-                    return ((other.add_sub(self, operation=-1, sign_diff=-1)))
-
-    def __sub__(self, other):
-        return (self.__add__(other, sign_diff=-1))
-
-    def add_sub(self, other, operation=1, sign_diff=1):
-        if other.pow > self.pow:
-            new_other_val = other.val + \
-                [0 for i in range(other.pow - self.pow)]
-            new_self_val = self.val
-            new_pow = self.pow
-        else:
-            new_self_val = self.val + \
-                [0 for i in range(self.pow - other.pow)]
-            new_other_val = other.val
-            new_pow = other.pow
-        len_self = len(new_self_val)
-        len_other = len(new_other_val)
-        if len_self > len_other:
-            new_other_val = [0 for i in range(
-                len_self - len_other)] + new_other_val
-        else:
-            new_self_val = [0 for i in range(
-                len_other - len_self)] + new_self_val
-        new_val = []
-        for i in range(len(new_self_val)):
-            new_val.append(new_self_val[i] + new_other_val[i] * operation)
+                    new_val, new_pow = f_add_sub(
+                        other.val, other.pow, self.val, self.pow, operation=-1)
+                    sign_diff = -1
         new_num = MagNum(precision=max(self.prec, other.prec),
                          custom_val_pow_sign=(new_val, new_pow, self.sign * sign_diff))
         new_num.flatten()
         new_num.flatten_horizontal()
         return (new_num)
 
-    def __mul__(self, other, f_mul=karatsuba.karatsuba):
+    def __sub__(self, other):
+        return (self.__add__(other, sign_diff=-1))
+
+    def __mul__(self, other, f_mul=oper.karatsuba):
         new_prec = max(self.prec, other.prec)
         new_val = f_mul(self.val, other.val)
         new_pow = self.pow + other.pow
@@ -140,6 +109,9 @@ class MagNum:
         new_num = MagNum(precision=new_prec, custom_val_pow_sign=(
             new_val, new_pow, new_sign))
         return (new_num)
+
+    def __div__(self, other, f_div):
+        pass
 
     def __str__(self):
         str_val = ''.join(str(i) for i in self.val)

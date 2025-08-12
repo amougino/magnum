@@ -1,2 +1,5 @@
 magnum/mag_test.py
 .DS_store
+*.egg*
+__pycache__
+.vscode

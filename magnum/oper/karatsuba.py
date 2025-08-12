@@ -31,7 +31,7 @@ def karatsuba_add_sub(val1, val2, operation='add'):
     while f[0] == 0 and len(f) > 1:
         f.pop(0)
 
-    return (f)
+    return f
 
 
 def karatsuba(val1, val2):
@@ -49,7 +49,7 @@ def karatsuba(val1, val2):
         while copy2[0] // 10 != 0:
             copy2.insert(0, copy2[0] // 10)
             copy2[1] %= 10
-        return (copy2)
+        return copy2
 
     elif len(copy2) == 1:
         len1 = len(copy1)
@@ -62,7 +62,7 @@ def karatsuba(val1, val2):
         while copy1[0] // 10 != 0:
             copy1.insert(0, copy1[0] // 10)
             copy1[1] %= 10
-        return (copy1)
+        return copy1
 
     else:
         if len(copy1) != len(copy2):
@@ -90,4 +90,4 @@ def karatsuba(val1, val2):
 
     f = karatsuba_add_sub(z2 + [0 for i in range(2*k)],
                           karatsuba_add_sub(z1m_z0pz2 + [0 for i in range(k)], z0))
-    return (f)
+    return f
