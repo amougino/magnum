@@ -1,3 +1,25 @@
+def flatten(val):
+    length = len(val)
+    for i in range(1, length):
+        idx = length - i
+        val[idx - 1] += val[idx] // 10
+        val[idx] %= 10
+    while val[0] // 10 != 0:
+        val(0, val[0] // 10)
+        val[1] %= 10
+    return val
+
+
+def flatten_horizontal(val, pow):
+    if val != [0]:
+        while val[-1] == 0:
+            val.pop(-1)
+            pow += 1
+        while val[0] == 0:
+            val.pop(0)
+    return (val, pow)
+
+
 def abs_greater(val1, pow1, val2, pow2):
     if (val1, pow1) == (val2, pow2):
         return False
@@ -41,4 +63,7 @@ def add_sub(val1, pow1, val2, pow2, operation=1):
     new_val = []
     for i in range(len(new_val1)):
         new_val.append(new_val1[i] + new_val2[i] * operation)
+    new_val = flatten(new_val)
+    if new_val.count(0) < len(new_val):
+        new_val, new_pow = flatten_horizontal(new_val, new_pow)
     return (new_val, new_pow)

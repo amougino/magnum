@@ -40,9 +40,6 @@ class MagNum:
             self.val = new_val
             self.pow = new_prec
             self.flatten()
-            '''while self.val[-1] == 0 and self.pow < 0:
-                self.val.pop(-1)
-                self.pow += 1'''  # re-add if seen that necessary
 
     def change_prec_no_round(self, new_prec):
         if new_prec > self.pow:
@@ -52,22 +49,11 @@ class MagNum:
                 self.val.pop(-1)
                 self.pow += 1
 
-    def flatten(self):
-        for i in range(1, len(self.val)):
-            idx = len(self.val) - i
-            self.val[idx - 1] += self.val[idx] // 10
-            self.val[idx] %= 10
-        while self.val[0] // 10 != 0:
-            self.val.insert(0, self.val[0] // 10)
-            self.val[1] %= 10
+    def flatten(self, f_flatten=oper.flatten):
+        self.val = f_flatten(self.val)
 
-    def flatten_horizontal(self):
-        if self.val != [0]:
-            while self.val[-1] == 0:
-                self.val.pop(-1)
-                self.pow += 1
-            while self.val[0] == 0:
-                self.val.pop(0)
+    def flatten_horizontal(self, f_flatten_horizontal=oper.flatten_horizontal):
+        self.val, self.pow = f_flatten_horizontal(self.val, self.pow)
 
     def abs_greater(self, other, f_abs_greater=oper.abs_greater):
         return f_abs_greater(self.val, self.pow, other.val, other.pow)
@@ -84,22 +70,24 @@ class MagNum:
                 sign_diff = 1
             else:
                 if (self.val, self.pow) == (other.val, other.pow):
-                    return (MagNum(
+                    return MagNum(
                         precision=max(self.prec, other.prec),
                         custom_val_pow_sign=([0], 0, 1)
-                    ))
+                    )
                 else:
                     new_val, new_pow = f_add_sub(
                         other.val, other.pow, self.val, self.pow, operation=-1)
                     sign_diff = -1
         new_num = MagNum(precision=max(self.prec, other.prec),
-                         custom_val_pow_sign=(new_val, new_pow, self.sign * sign_diff))
-        new_num.flatten()
-        new_num.flatten_horizontal()
-        return (new_num)
+                         custom_val_pow_sign=(
+                             new_val,
+                             new_pow,
+                             self.sign * sign_diff
+        ))
+        return new_num
 
     def __sub__(self, other):
-        return (self.__add__(other, sign_diff=-1))
+        return self.__add__(other, sign_diff=-1)
 
     def __mul__(self, other, f_mul=oper.karatsuba):
         new_prec = max(self.prec, other.prec)
@@ -108,23 +96,34 @@ class MagNum:
         new_sign = self.sign * other.sign
         new_num = MagNum(precision=new_prec, custom_val_pow_sign=(
             new_val, new_pow, new_sign))
-        return (new_num)
+        return new_num
 
-    def __div__(self, other, f_div):
-        pass
+    def __truediv__(self, other, f_div=oper.long_div):
+        new_prec = min(self.prec, other.prec)
+        new_val, new_pow = f_div(
+            self.val, self.pow, other.val, other.pow, new_prec)
+        new_sign = self.sign * other.sign
+        return MagNum(precision=new_prec, custom_val_pow_sign=(new_val, new_pow, new_sign))
 
     def __str__(self):
         str_val = ''.join(str(i) for i in self.val)
         if self.pow < 0:
-            str_val = (str_val[:len(self.val) + self.pow] +
-                       '.' +
-                       str_val[len(self.val) + self.pow:])
+            if len(self.val) <= self.pow*-1:
+                str_val = '0.' + '0'*((self.pow+len(self.val))*-1) + str_val
+            else:
+                str_val = (str_val[:len(self.val) + self.pow] +
+                           '.' + str_val[len(self.val) + self.pow:])
         else:
             str_val = (str_val + '0'*self.pow)
         if self.sign == 1:
-            return (str_val)
+            return str_val
         else:
             return ('-'+str_val)
 
 # division
+# check __str__... shit seems weird
 # powers / fractional powers ?
+
+# _ in front of func = not supposed to be used by user
+# all caps = constant
+# add descriptions of each function (description, args, arg type, return, return type)
