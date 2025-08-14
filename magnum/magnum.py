@@ -1,6 +1,5 @@
 # rotation
 
-
 import oper
 
 

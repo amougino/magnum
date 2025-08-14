@@ -1,7 +1,8 @@
 import copy
+from oper.basic_func import short_mul
 
 
-def karatsuba_add_sub(val1, val2, operation='add'):
+def _karatsuba_add_sub(val1, val2, operation='add'):
     len1 = len(val1)
     len2 = len(val2)
 
@@ -39,30 +40,10 @@ def karatsuba(val1, val2):
     copy2 = copy.deepcopy(val2)
 
     if len(copy1) == 1:
-        len2 = len(copy2)
-        for i in range(len2):
-            copy2[i] *= copy1[0]
-        for i in range(1, len2):
-            idx = len2 - i
-            copy2[idx - 1] += copy2[idx] // 10
-            copy2[idx] %= 10
-        while copy2[0] // 10 != 0:
-            copy2.insert(0, copy2[0] // 10)
-            copy2[1] %= 10
-        return copy2
+        return short_mul(copy2, copy1[0])
 
     elif len(copy2) == 1:
-        len1 = len(copy1)
-        for i in range(len1):
-            copy1[i] *= copy2[0]
-        for i in range(1, len1):
-            idx = len1 - i
-            copy1[idx - 1] += copy1[idx] // 10
-            copy1[idx] %= 10
-        while copy1[0] // 10 != 0:
-            copy1.insert(0, copy1[0] // 10)
-            copy1[1] %= 10
-        return copy1
+        return short_mul(copy1, copy2[0])
 
     else:
         if len(copy1) != len(copy2):
@@ -79,15 +60,15 @@ def karatsuba(val1, val2):
     low_b = copy2[half:]
 
     z0 = karatsuba(low_a, low_b)  # ac
-    z1 = karatsuba(karatsuba_add_sub(high_a, low_a),
-                   karatsuba_add_sub(high_b, low_b))  # (a+b)(c+d)
+    z1 = karatsuba(_karatsuba_add_sub(high_a, low_a),
+                   _karatsuba_add_sub(high_b, low_b))  # (a+b)(c+d)
     z2 = karatsuba(high_a, high_b)  # bd
 
     k = length - half
 
-    z0pz2 = karatsuba_add_sub(z0, z2)
-    z1m_z0pz2 = karatsuba_add_sub(z1, z0pz2, 'sub')
+    z0pz2 = _karatsuba_add_sub(z0, z2)
+    z1m_z0pz2 = _karatsuba_add_sub(z1, z0pz2, 'sub')
 
-    f = karatsuba_add_sub(z2 + [0 for i in range(2*k)],
-                          karatsuba_add_sub(z1m_z0pz2 + [0 for i in range(k)], z0))
+    f = _karatsuba_add_sub(z2 + [0 for i in range(2*k)],
+                           _karatsuba_add_sub(z1m_z0pz2 + [0 for i in range(k)], z0))
     return f

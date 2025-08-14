@@ -67,3 +67,17 @@ def add_sub(val1, pow1, val2, pow2, operation=1):
     if new_val.count(0) < len(new_val):
         new_val, new_pow = flatten_horizontal(new_val, new_pow)
     return (new_val, new_pow)
+
+
+def short_mul(val, digit):
+    length = len(val)
+    for i in range(length):
+        val[i] *= digit
+    for i in range(1, length):
+        idx = length - i
+        val[idx - 1] += val[idx] // 10
+        val[idx] %= 10
+    while val[0] // 10 != 0:
+        val.insert(0, val[0] // 10)
+        val[1] %= 10
+    return val
