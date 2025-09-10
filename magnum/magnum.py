@@ -1,11 +1,14 @@
-# rotation
-
 import oper
 
 
 class MagNum:
 
     def __init__(self, float_val=0, precision=-8, custom_val_pow_sign=()):
+        '''
+        float_val : float
+        precision : int
+        custom_val_pow_sign : ([int,int,...] with int between 0 and 9, int, 1 or -1)
+        '''
         if custom_val_pow_sign == ():
             if float_val < 0:
                 self.sign = -1
@@ -32,32 +35,64 @@ class MagNum:
         self.flatten_horizontal()
 
     def change_prec_round(self, new_prec):
+        '''
+        new_prec : int
+        change the precision to new_prec, with rounding
+        '''
         if new_prec > self.pow:
             new_val = self.val[:self.pow - new_prec]
-            if self.val[self.pow-new_prec] >= 5:
-                new_val[-1] += 1
+            if new_val != []:
+                if self.val[self.pow - new_prec] >= 5:
+                    new_val[-1] += 1
+            else:
+                new_val = [0]
             self.val = new_val
             self.pow = new_prec
             self.flatten()
 
     def change_prec_no_round(self, new_prec):
+        '''
+        new_prec : int
+        change the precision to new_prec, without rounding
+        truncates
+        '''
         if new_prec > self.pow:
             self.val = self.val[:self.pow-new_prec]
             self.pow = new_prec
-            while self.val[-1] == 0 and self.pow < 0:
-                self.val.pop(-1)
-                self.pow += 1
+        self.flatten_horizontal()
 
     def flatten(self, f_flatten=oper.flatten):
+        '''
+        f_flatten : func
+        flattens using the f_flatten function
+        if there are non digits or non positive integers, self.val is adapted
+        '''
         self.val = f_flatten(self.val)
 
     def flatten_horizontal(self, f_flatten_horizontal=oper.flatten_horizontal):
+        '''
+        f_flatten_horizontal : func
+        removes extra 0s at beginning and end using f_flatten_horizontal function
+        '''
         self.val, self.pow = f_flatten_horizontal(self.val, self.pow)
 
     def abs_greater(self, other, f_abs_greater=oper.abs_greater):
+        '''
+        other : MagNum
+        f_abs_greater : func
+        return : bool
+        checks if the absolute value of self is greater than the absolute value of other
+        '''
         return f_abs_greater(self.val, self.pow, other.val, other.pow)
 
     def __add__(self, other, sign_diff=1, f_add_sub=oper.add_sub):
+        '''
+        other : MagNum
+        sign_diff : 1 or -1 (not used by user)
+        f_add_sub : func
+        return : MagNum
+        adds self and other*sign_diff
+        '''
         if self.sign == other.sign * sign_diff:
             new_val, new_pow = f_add_sub(
                 self.val, self.pow, other.val, other.pow)
@@ -86,9 +121,20 @@ class MagNum:
         return new_num
 
     def __sub__(self, other):
+        '''
+        other : MagNum
+        return : MagNum
+        subtracts self and other
+        '''
         return self.__add__(other, sign_diff=-1)
 
     def __mul__(self, other, f_mul=oper.karatsuba):
+        '''
+        other : MagNum
+        f_mul : func
+        return : MagNum
+        multiplies self and other
+        '''
         new_prec = max(self.prec, other.prec)
         new_val = f_mul(self.val, other.val)
         new_pow = self.pow + other.pow
@@ -98,13 +144,31 @@ class MagNum:
         return new_num
 
     def __truediv__(self, other, f_div=oper.long_div):
+        '''
+        other : MagNum
+        f_div : func
+        return : MagNum
+        divides self and other
+        '''
         new_prec = min(self.prec, other.prec)
         new_val, new_pow = f_div(
             self.val, self.pow, other.val, other.pow, new_prec)
         new_sign = self.sign * other.sign
         return MagNum(precision=new_prec, custom_val_pow_sign=(new_val, new_pow, new_sign))
 
+    def sqrt(self, f_sqrt=oper.nr_sqrt):
+        '''
+        f_sqrt : func
+        return : MagNum
+        finds the square root of self
+        '''
+        new_val, new_pow = f_sqrt(self.val, self.pow, self.sign, self.prec)
+        return MagNum(precision=self.prec, custom_val_pow_sign=(new_val, new_pow, self.sign))
+
     def __str__(self):
+        '''
+        turns self into a string (useful for a print)
+        '''
         str_val = ''.join(str(i) for i in self.val)
         if self.pow < 0:
             if len(self.val) <= self.pow*-1:

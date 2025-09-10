@@ -3,3 +3,4 @@ magnum/mag_test.py
 *.egg*
 __pycache__
 .vscode
+gravSim3

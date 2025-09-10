@@ -5,17 +5,17 @@ def flatten(val):
         val[idx - 1] += val[idx] // 10
         val[idx] %= 10
     while val[0] // 10 != 0:
-        val(0, val[0] // 10)
+        val[0] = val[0] // 10
         val[1] %= 10
     return val
 
 
 def flatten_horizontal(val, pow):
     if val != [0]:
-        while val[-1] == 0:
+        while val[-1] == 0 and len(val) > 1:
             val.pop(-1)
             pow += 1
-        while val[0] == 0:
+        while val[0] == 0 and len(val) > 1:
             val.pop(0)
     return (val, pow)
 

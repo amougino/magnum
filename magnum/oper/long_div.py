@@ -3,6 +3,8 @@ from oper.basic_func import abs_greater, add_sub, short_mul
 
 
 def long_div(numer_val, numer_pow, denom_val, denom_pow, prec):
+    if denom_val == [0]:
+        raise Exception('mag error : cannot divide by 0')
     modifier = 0
     if len(numer_val) > len(denom_val) + denom_pow:
         while abs_greater(numer_val, 0, denom_val, denom_pow + modifier + 1) == True:
@@ -28,6 +30,6 @@ def long_div(numer_val, numer_pow, denom_val, denom_pow, prec):
         q.append(digit)
         r, r_pow = add_sub(r, r_pow, current_div, div_pow, operation=-1)
         div_pow -= 1
-        if r_pow <= prec:
+        if len(r) + r_pow <= prec:
             break
     return (q, div_pow + 1 - denom_pow + numer_pow)
