@@ -34,6 +34,45 @@ class MagNum:
         self.change_prec_round(precision)
         self.flatten_horizontal()
 
+    def __str__(self):
+        '''
+        turns self into a string (useful for a print)
+        '''
+        str_val = ''.join(str(i) for i in self.val)
+        if self.pow < 0:
+            if len(self.val) <= self.pow*-1:
+                str_val = '0.' + '0'*((self.pow+len(self.val))*-1) + str_val
+            else:
+                str_val = (str_val[:len(self.val) + self.pow] +
+                           '.' + str_val[len(self.val) + self.pow:])
+        else:
+            str_val = (str_val + '0'*self.pow)
+        if self.sign == 1:
+            return str_val
+        else:
+            return ('-'+str_val)
+
+    def __float__(self, length=10):
+        '''
+        length : int
+        returns a float that is a rounded value of self, of length digits long
+        '''
+        if length > 16:
+            length = 16
+        len_val = len(self.val)
+        if len_val > length:
+            str_val = ''.join(str(i) for i in self.val[:length-1])
+            if self.val[length] >= 5:
+                str_val += str(self.val[length - 1] + 1)
+            else:
+                str_val += str(self.val[length - 1])
+        else:
+            str_val = ''.join(str(i) for i in self.val)
+        if self.sign == -1:
+            str_val = '-'+str_val
+        str_val += 'E'+str(self.pow + len(self.val) - length)
+        return (float(str_val))
+
     def change_prec_round(self, new_prec):
         '''
         new_prec : int
@@ -164,28 +203,6 @@ class MagNum:
         '''
         new_val, new_pow = f_sqrt(self.val, self.pow, self.sign, self.prec)
         return MagNum(precision=self.prec, custom_val_pow_sign=(new_val, new_pow, self.sign))
-
-    def __str__(self):
-        '''
-        turns self into a string (useful for a print)
-        '''
-        str_val = ''.join(str(i) for i in self.val)
-        if self.pow < 0:
-            if len(self.val) <= self.pow*-1:
-                str_val = '0.' + '0'*((self.pow+len(self.val))*-1) + str_val
-            else:
-                str_val = (str_val[:len(self.val) + self.pow] +
-                           '.' + str_val[len(self.val) + self.pow:])
-        else:
-            str_val = (str_val + '0'*self.pow)
-        if self.sign == 1:
-            return str_val
-        else:
-            return ('-'+str_val)
-
-# division
-# check __str__... shit seems weird
-# powers / fractional powers ?
 
 # _ in front of func = not supposed to be used by user
 # all caps = constant
