@@ -1,1 +1,1 @@
-from magnum.magnum import *
+from magnum.main import *

@@ -1,5 +1,5 @@
 import copy
-from oper.basic_func import short_mul
+from magnum.oper.basic_func import short_mul
 
 
 def _karatsuba_add_sub(val1, val2, operation='add'):

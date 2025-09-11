@@ -1,6 +1,15 @@
 import copy
-from oper.basic_func import abs_greater, add_sub
-from oper.long_div import long_div
+from magnum.oper.basic_func import flatten_horizontal, abs_greater, add_sub
+from magnum.oper.long_div import long_div
+
+# constants can change
+_SQRT_PREC_MULTIPLIER = 1.1
+_SQRT_PREC_SHIFT = -2
+
+
+def _extra_prec(prec, multiplier=_SQRT_PREC_MULTIPLIER, shift=_SQRT_PREC_SHIFT):
+    prec = (prec*multiplier) + shift
+    return int(prec)
 
 
 def _nr_sqrt_start(val, pow):
@@ -21,19 +30,21 @@ def _next_nr_sqrt(x0v, x0p, orig_v, orig_p, prec):
 
 
 def nr_sqrt(val, pow, sign, prec):
+    adapted_prec = _extra_prec(prec)
     if sign == -1:
         raise Exception(
             'mag error : cannot obtain the square root of a negative number')
     x0v, x0p = _nr_sqrt_start(val, pow)
-    x1v, x1p = _next_nr_sqrt(x0v, x0p, val, pow, prec)
+    x1v, x1p = _next_nr_sqrt(x0v, x0p, val, pow, adapted_prec)
     while True:
         if abs_greater(x0v, x0p, x1v, x1p):
             delta_v, delta_p = add_sub(x0v, x0p, x1v, x1p, operation=-1)
         else:
             delta_v, delta_p = add_sub(x1v, x1p, x0v, x0p, operation=-1)
-        if abs_greater([1], prec, delta_v, delta_p):
+        delta_v, delta_p = flatten_horizontal(delta_v, delta_p)
+        if abs_greater([1], prec, delta_v, delta_p) or delta_v == [0]:
             return (x1v, x1p)
         else:
             x0v = copy.deepcopy(x1v)
             x0p = copy.deepcopy(x1p)
-            x1v, x1p = _next_nr_sqrt(x0v, x0p, val, pow, prec)
+            x1v, x1p = _next_nr_sqrt(x0v, x0p, val, pow, adapted_prec)

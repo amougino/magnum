@@ -1,4 +1,4 @@
-import oper
+from magnum import oper
 
 
 class MagNum:
@@ -15,7 +15,13 @@ class MagNum:
                 float_val *= -1
             else:
                 self.sign = 1
-            split_float = str(float_val).split('.')
+            str_val = str(float_val)
+            extra_pow = 0
+            seperation_e = str_val.split('e')
+            str_val = seperation_e[0]
+            if len(seperation_e) == 2:
+                extra_pow = int(seperation_e[1])
+            split_float = str_val.split('.')
             if len(split_float) == 2 and split_float[1] != '0':
                 self.val = [int(char)
                             for char in (split_float[0] + split_float[1])]
@@ -26,6 +32,7 @@ class MagNum:
                     self.pow += 1
                     split_float[0] = split_float[0][:-1]
                 self.val = [int(char) for char in split_float[0]]
+            self.pow += extra_pow
         else:
             self.val = custom_val_pow_sign[0]
             self.pow = custom_val_pow_sign[1]
@@ -207,3 +214,4 @@ class MagNum:
 # _ in front of func = not supposed to be used by user
 # all caps = constant
 # add descriptions of each function (description, args, arg type, return, return type)
+# linter

@@ -1,5 +1,5 @@
 import copy
-from oper.basic_func import abs_greater, add_sub, short_mul
+from magnum.oper.basic_func import abs_greater, add_sub, short_mul
 
 
 def long_div(numer_val, numer_pow, denom_val, denom_pow, prec):
@@ -7,10 +7,10 @@ def long_div(numer_val, numer_pow, denom_val, denom_pow, prec):
         raise Exception('mag error : cannot divide by 0')
     modifier = 0
     if len(numer_val) > len(denom_val) + denom_pow:
-        while abs_greater(numer_val, 0, denom_val, denom_pow + modifier + 1) == True:
+        while abs_greater(numer_val, 0, denom_val, denom_pow + modifier + 1):
             modifier += 1
     else:
-        while abs_greater(numer_val, 0, denom_val, denom_pow + modifier) == False:
+        while not abs_greater(numer_val, 0, denom_val, denom_pow + modifier):
             modifier -= 1
     r = copy.deepcopy(numer_val)
     r_pow = 0
@@ -23,7 +23,7 @@ def long_div(numer_val, numer_pow, denom_val, denom_pow, prec):
         digit = 0
         current_div = [0]
         next_div = copy.deepcopy(denom_val)
-        while abs_greater(next_div, div_pow, r, r_pow) == False:
+        while not abs_greater(next_div, div_pow, r, r_pow):
             digit += 1
             current_div = copy.deepcopy(next_div)
             next_div = short_mul(copy.deepcopy(denom_val), digit + 1)
